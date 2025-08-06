@@ -1,0 +1,163 @@
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FF EVENTS BD</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #ff69b4;
+      color: #fff;
+      margin: 0;
+      padding: 20px;
+      text-align: center;
+      user-select: none; /* Text select disable */
+    }
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .header img {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+    }
+    h1 {
+      font-size: 1.8rem;
+      margin: 0;
+      color: #fff;
+    }
+    .event {
+      background: #1e1e1e;
+      border-radius: 10px;
+      padding: 15px;
+      margin: 20px auto;
+      width: 95%;
+      max-width: 600px;
+      text-align: left;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+    }
+    .event img {
+      max-width: 100%;
+      border-radius: 8px;
+      margin-top: 10px;
+    }
+    .footer {
+      color: #ccc;
+      font-style: italic;
+      margin-top: 10px;
+    }
+    .loading {
+      color: yellow;
+      font-weight: bold;
+      margin-top: 20px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 1rem;
+      background-color: #c2185b;
+      border: none;
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #ad1457;
+    }
+    a {
+      color: #4fa3ff;
+    }
+  </style>
+</head>
+<body oncontextmenu="return false" onkeydown="return disableInspect(event)" ondragstart="return false" onselectstart="return false">
+
+  <div class="header">
+    <img src="images/IMG-20250703-152211-880.jpg" alt="Logo">
+    <h1>🎉 FF EVENT BD
+    </h1>
+  </div>
+
+  <button onclick="fetchEvents()">🔄 Get Events</button>
+
+  <div id="events"></div>
+
+  <script>
+    const eventsContainer = document.getElementById('events');
+
+    function convertTimestamp(timestamp) {
+      const date = new Date(timestamp * 1000);
+      return date.toLocaleString();
+    }
+
+    async function fetchEvents() {
+      eventsContainer.innerHTML = '<p class="loading">🔄 Fetching Free Fire events...</p>';
+
+      const proxy = "https://corsproxy.io/?";
+      const apiURL = proxy + encodeURIComponent("https://xp-event-api-s1-w12s.vercel.app/event?region=BD");
+
+      try {
+        const response = await fetch(apiURL);
+        const data = await response.json();
+
+        eventsContainer.innerHTML = '';
+
+        if (!data.events || data.events.length === 0) {
+          eventsContainer.innerHTML = '<p>❌ No upcoming events found!</p>';
+          return;
+        }
+
+        data.events.forEach(event => {
+          const eventDiv = document.createElement('div');
+          eventDiv.className = 'event';
+
+          eventDiv.innerHTML = `
+            <div>━━━━━━━━━━━━━━━━━━━━━━━</div>
+            <div><strong>🔹 Event Name:</strong> ${event.Title || 'N/A'}</div>
+            <div><strong>📅 Start Date:</strong> ${convertTimestamp(event.Start)}</div>
+            <div><strong>⏳ End Date:</strong> ${convertTimestamp(event.End)}</div>
+            ${event.link ? `<div>🔗 <a href="${event.link}" target="_blank">Event Link</a></div>` : ''}
+            ${event.Banner ? `<img src="${event.Banner}" alt="Event Banner">` : ''}
+            <div class="footer">👤 LEAKS OF FF 😎</div>
+          `;
+
+          eventsContainer.appendChild(eventDiv);
+        });
+      } catch (error) {
+        eventsContainer.innerHTML = `<p style="color:red">⚠ Error fetching data: ${error.message}</p>`;
+      }
+    }
+
+    // 🚫 Disable Inspect / View Source
+    function disableInspect(e) {
+      if (
+        e.key === "F12" ||
+        (e.ctrlKey && e.shiftKey && e.key === "I") ||
+        (e.ctrlKey && e.shiftKey && e.key === "J") ||
+        (e.ctrlKey && e.key === "U")
+      ) {
+        alert("🚫 Sorry! Code is protected.");
+        return false;
+      }
+    }
+
+    // Disable Right Click globally
+    document.addEventListener('contextmenu', function (e) {
+      e.preventDefault();
+    }, false);
+
+    // Disable Ctrl+C, Ctrl+U, Ctrl+S, Ctrl+Shift+I etc.
+    document.addEventListener('keydown', function (e) {
+      if (
+        e.ctrlKey &&
+        ["c", "u", "s", "p", "i", "j"].includes(e.key.toLowerCase())
+      ) {
+        e.preventDefault();
+        alert("🚫 Action Blocked!");
+      }
+    });
+  </script>
+
+
+</body></html>
